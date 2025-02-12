@@ -38,7 +38,7 @@ This project is a Chess bot that plays on an online chess platform using Seleniu
 4. **Enable Chrome Debugging:**
    Run Chrome with debugging enabled:
    ```sh
-   chrome.exe --remote-debugging-port=9223 --user-data-dir="C:\chrome-profile"
+  "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9223 --user-data-dir="C:\Users\[YOURUSERNAME]\AppData\Local\Google\Chrome\User Data
    ```
 
 ## Usage
