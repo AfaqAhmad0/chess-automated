@@ -11,26 +11,32 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from stockfish import Stockfish
 
+import json
+
+# Load configuration file
+with open("config.json", "r") as file:
+    config = json.load(file)
+
 side = input("b or w: ").strip().lower()
 
 # castling_rights = "KQkq"
 
 def setup_driver(debugger_address):
 
-    # root = tk.Tk()
-    # root.withdraw()  # Hide the root window
-    # root.attributes('-topmost', True)  # Bring the window to the front
-
-    # # Open file dialog to select the chromedriver
-    # driver_path = filedialog.askopenfilename(title="Select Chromedriver", 
-    #                                         filetypes=[("Executable Files", "*.exe"), ("All Files", "*.*")],
-    #                                         parent=root)
-    driver_path = "H:/Rough/chess/chess-automated/chromedriver-win64/chromedriver-win64/chromedriver.exe"
+   
+    driver_path = config["driver_path"]
     if driver_path:
         print(f"Selected Chromedriver: {driver_path}")
     else:
-        driver_path = "H:/Rough/chess/chess-automated/chromedriver-win64/chromedriver-win64/chromedriver.exe" 
-        print("No file selected.")
+        print("No file selected.") 
+        root = tk.Tk()
+        root.withdraw()  # Hide the root window
+        root.attributes('-topmost', True)  # Bring the window to the front
+
+        # Open file dialog to select the chromedriver
+        driver_path = filedialog.askopenfilename(title="Select Chromedriver", 
+                                                filetypes=[("Executable Files", "*.exe"), ("All Files", "*.*")],
+                                                parent=root)
 
     """Setup Selenium WebDriver."""
     chrome_options = Options()
@@ -56,11 +62,9 @@ def square_to_board(square):
 def setup_stockfish():
     """Setup Stockfish engine."""
     stockfish = Stockfish("H:/Rough/chess/stockfish/stockfish-windows-x86-64.exe")
-    stockfish.set_skill_level(19)
-    stockfish.set_elo_rating(3000)
+    stockfish.set_skill_level(config["skill_level"])
+    stockfish.set_elo_rating(config["elo_rating"])
     return stockfish
-
-
 
 def get_board_state(driver):
     """Extract chess board state from the webpage."""
@@ -97,7 +101,6 @@ def board_to_fen(board, castling_rights):
             fen_row += str(empty)
         fen_rows.append(fen_row)
     return f"{'/'.join(fen_rows)} {side} {castling_rights} - 0 1"
-
 
 def get_board_from_fen(fen):
     """Convert FEN string to board representation."""
@@ -136,6 +139,7 @@ def perform_move(driver, move):
         try:
             element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click1)))
             ActionChains(driver).move_to_element(element).click().perform()
+            time.sleep(0.5)
             element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click2)))
             ActionChains(driver).move_to_element(element).click().perform()
             # print(f"Clicked: {click}")
@@ -234,7 +238,12 @@ if __name__ == "__main__":
     castling_rights = "KQkq"
     
     # debugger_address = "localhost:"+input("Enter the debugger address: ")
-    debugger_address = "localhost:9223"
+    debugger_address = config["debugger_address"]
+    if debugger_address:
+        print(f"Selected debugger address: {debugger_address}")
+    else:
+        print("No debugger address selected.")
+        debugger_address = input("Enter the debugger address: ")
 
     driver = setup_driver(debugger_address)
     while True:
