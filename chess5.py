@@ -135,18 +135,18 @@ def perform_move(driver, move):
     click2 = f"square-{col_map[move[2]]}{move[3]}"
     
     # for click in [click1, click2]:
-    while True:
-        try:
-            element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click1)))
-            ActionChains(driver).move_to_element(element).click().perform()
-            time.sleep(0.5)
-            element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click2)))
-            ActionChains(driver).move_to_element(element).click().perform()
+    # while True:
+    #     try:
+    element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click1)))
+    ActionChains(driver).move_to_element(element).click().perform()
+    time.sleep(0.5)
+    element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click2)))
+    ActionChains(driver).move_to_element(element).click().perform()
             # print(f"Clicked: {click}")
-            break
-        except Exception as e:
-            print(f"Retrying click: , Error: {e}")
-            time.sleep(1)
+            # break
+        # except Exception as e:
+        #     print(f"Retrying click: , Error: {e}")
+        #     time.sleep(1)
 
 
 
@@ -221,7 +221,9 @@ def main(castling_rights, driver):
 
 
             if best_move == None:
+
                 print("_____________________________________")
+                exit(0)
             
             updated_fen = update_fen(fen, best_move, castling_rights)
             print("FEN2:", updated_fen)
