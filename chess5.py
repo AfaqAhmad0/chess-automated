@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import filedialog
 import random
@@ -21,27 +22,32 @@ side = input("b or w: ").strip().lower()
 
 # castling_rights = "KQkq"
 
-def setup_driver(debugger_address):
+def select_driver():
+    """Select the chromedriver executable file."""
+    root = tk.Tk()
+    root.withdraw()  # Hide the root window
+    root.attributes('-topmost', True)  # Bring the window to the front
+    driver_path = filedialog.askopenfilename(title="Select Chromedriver", 
+                                            filetypes=[("Executable Files", "*.exe"), ("All Files", "*.*")],
+                                            parent=root)
+    return driver_path
 
-   
+def setup_driver(debugger_address):
+    """Setup the Selenium WebDriver."""
     driver_path = config["driver_path"]
     if driver_path:
         print(f"Selected Chromedriver: {driver_path}")
     else:
-        print("No file selected.") 
-        root = tk.Tk()
-        root.withdraw()  # Hide the root window
-        root.attributes('-topmost', True)  # Bring the window to the front
+        driver_path = select_driver()
+    if not driver_path or not os.path.isfile(driver_path):
+        driver_path = select_driver()
 
-        # Open file dialog to select the chromedriver
-        driver_path = filedialog.askopenfilename(title="Select Chromedriver", 
-                                                filetypes=[("Executable Files", "*.exe"), ("All Files", "*.*")],
-                                                parent=root)
-
-    """Setup Selenium WebDriver."""
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", debugger_address)
     service = Service(driver_path)
+    config["driver_path"] = driver_path
+    with open("config.json", "w") as file:
+        json.dump(config, file, indent=4)
     return webdriver.Chrome(service=service, options=chrome_options)
 
 piece_map = {
@@ -200,17 +206,13 @@ def main(castling_rights, driver):
     """Main execution loop."""
     
     stockfish = setup_stockfish()
-    prev_fen = ""
     
     while True:
         board = get_board_state(driver)
 
-        # print("castling_rights: ",castling_rights)
         castling_rights = is_castling_available(board,castling_rights)
-        # print("update_castling_rights: ",castling_rights)
 
         fen = board_to_fen(board, castling_rights)
-        # print("FEN:", fen)
         turn_who =  turn(driver)
         
         if turn_who == side:
@@ -221,13 +223,11 @@ def main(castling_rights, driver):
 
 
             if best_move == None:
-
                 print("_____________________________________")
                 exit(0)
             
             updated_fen = update_fen(fen, best_move, castling_rights)
             print("FEN2:", updated_fen)
-            prev_fen = updated_fen
             
             perform_move(driver, best_move)
             time.sleep(1)
