@@ -1,3 +1,5 @@
+import tkinter as tk
+from tkinter import filedialog
 import random
 import time
 from selenium import webdriver
@@ -13,11 +15,27 @@ side = input("b or w: ").strip().lower()
 
 # castling_rights = "KQkq"
 
-def setup_driver():
+def setup_driver(debugger_address):
+
+    # root = tk.Tk()
+    # root.withdraw()  # Hide the root window
+    # root.attributes('-topmost', True)  # Bring the window to the front
+
+    # # Open file dialog to select the chromedriver
+    # driver_path = filedialog.askopenfilename(title="Select Chromedriver", 
+    #                                         filetypes=[("Executable Files", "*.exe"), ("All Files", "*.*")],
+    #                                         parent=root)
+    driver_path = "H:/Rough/chess/chess-automated/chromedriver-win64/chromedriver-win64/chromedriver.exe"
+    if driver_path:
+        print(f"Selected Chromedriver: {driver_path}")
+    else:
+        driver_path = "H:/Rough/chess/chess-automated/chromedriver-win64/chromedriver-win64/chromedriver.exe" 
+        print("No file selected.")
+
     """Setup Selenium WebDriver."""
     chrome_options = Options()
-    chrome_options.add_experimental_option("debuggerAddress", "localhost:9223")
-    service = Service("H:/Rough/chess/chromedriver-win64/chromedriver-win64/chromedriver.exe")
+    chrome_options.add_experimental_option("debuggerAddress", debugger_address)
+    service = Service(driver_path)
     return webdriver.Chrome(service=service, options=chrome_options)
 
 piece_map = {
@@ -113,16 +131,18 @@ def perform_move(driver, move):
     click1 = f"square-{col_map[move[0]]}{move[1]}"
     click2 = f"square-{col_map[move[2]]}{move[3]}"
     
-    for click in [click1, click2]:
-        while True:
-            try:
-                element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click)))
-                ActionChains(driver).move_to_element(element).click().perform()
-                # print(f"Clicked: {click}")
-                break
-            except Exception as e:
-                print(f"Retrying click: {click}, Error: {e}")
-                time.sleep(1)
+    # for click in [click1, click2]:
+    while True:
+        try:
+            element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click1)))
+            ActionChains(driver).move_to_element(element).click().perform()
+            element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click2)))
+            ActionChains(driver).move_to_element(element).click().perform()
+            # print(f"Clicked: {click}")
+            break
+        except Exception as e:
+            print(f"Retrying click: , Error: {e}")
+            time.sleep(1)
 
 
 
@@ -159,9 +179,22 @@ def are_fen_positions_equal(fen1, fen2):
     fields2 = fen2.split()[:4]
     return fields1 == fields2
 
-def main(castling_rights):
+def turn(driver):
+    move_lines =  driver.find_elements(By.CLASS_NAME, "main-line-row")
+    total_moves = 0
+    for move_line in move_lines:
+        move_line_text = move_line.find_elements(By.CLASS_NAME, "node")
+        total_moves += len(move_line_text)
+    # print("Move Lines: ", (move_lines))
+    if total_moves % 2 == 0:
+        return "w"
+    else:
+        return "b"
+    # exit(0)
+
+def main(castling_rights, driver):
     """Main execution loop."""
-    driver = setup_driver()
+    
     stockfish = setup_stockfish()
     prev_fen = ""
     
@@ -174,8 +207,9 @@ def main(castling_rights):
 
         fen = board_to_fen(board, castling_rights)
         # print("FEN:", fen)
+        turn_who =  turn(driver)
         
-        if not are_fen_positions_equal(fen, prev_fen):
+        if turn_who == side:
             stockfish.set_fen_position(fen)
             best_move = stockfish.get_best_move()
             print("Best Move:", best_move)
@@ -198,9 +232,14 @@ def main(castling_rights):
 
 if __name__ == "__main__":
     castling_rights = "KQkq"
+    
+    # debugger_address = "localhost:"+input("Enter the debugger address: ")
+    debugger_address = "localhost:9223"
+
+    driver = setup_driver(debugger_address)
     while True:
         try:
-            main(castling_rights)
+            main(castling_rights,driver)
         except Exception as e:
             print("Critical Error, restarting...", e)
             time.sleep(5)
