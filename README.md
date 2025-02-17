@@ -90,3 +90,10 @@ This project is for educational purposes and does not promote unfair play. Use r
 - [Selenium](https://www.selenium.dev/)
 - [Stockfish](https://stockfishchess.org/)
 
+## TO DO:
+- Restructure the code
+- Check for game end
+- deal with Promotion
+- can use for dataset creation
+- miss click error bug
+

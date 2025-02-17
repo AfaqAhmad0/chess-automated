@@ -1,0 +1,6 @@
+{
+    "driver_path": "H:/Rough/chess/chess-automated/chromedriver-win64/chromedriver-win64/chromedriver.exe",
+    "debugger_address": "localhost:9223",
+    "elo_rating": 3000,
+    "skill_level": 19
+}
