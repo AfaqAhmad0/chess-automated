@@ -19,8 +19,9 @@ with open("config.json", "r") as file:
     config = json.load(file)
 
 side = input("b or w: ").strip().lower()
-
-# castling_rights = "KQkq"
+if side not in ["b", "w"]:
+    print("Invalid side. Exiting...")
+    exit(1)
 
 def select_driver():
     """Select the chromedriver executable file."""
@@ -264,9 +265,7 @@ def main(castling_rights, driver):
     
     while True:
         board = get_board_state(driver)
-
         castling_rights = is_castling_available(board,castling_rights)
-
         fen = board_to_fen(board, castling_rights)
         turn_who =  turn(driver)
         print("Turn:", turn_who, "Side:", side)
@@ -284,14 +283,12 @@ def main(castling_rights, driver):
             best_move = stockfish.get_best_move()
             print("Best Move:", best_move)
             print("FEN1:", fen)
-
-
             if best_move == None:
                 print("_____________________________________")
                 exit(0)
             
-            updated_fen = update_fen(fen, best_move, castling_rights)
-            print("FEN2:", updated_fen)
+            # updated_fen = update_fen(fen, best_move, castling_rights)
+            # print("FEN2:", updated_fen)
             
             perform_move(driver, best_move)
             time.sleep(1)
