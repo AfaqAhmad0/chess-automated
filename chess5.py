@@ -135,26 +135,81 @@ def update_fen(fen, move, castling_rights):
     return board_to_fen(board, castling_rights)
 
 
-def perform_move(driver, move):
-    """Perform a move on the chess board via Selenium."""
+# def perform_move(driver, move):
+#     """Perform a move on the chess board via Selenium."""
+#     col_map = {"a": "1", "b": "2", "c": "3", "d": "4", "e": "5", "f": "6", "g": "7", "h": "8"}
+#     click1 = f"square-{col_map[move[0]]}{move[1]}"
+#     click2 = f"square-{col_map[move[2]]}{move[3]}"
+#     click3 = None
+#     if len(move) == 5:
+#         click3 = f"{side}{move[4]}"
+
+#         print(f"Promotion: {click3}")
+    
+#     # for click in [click1, click2]:
+#     # while True:
+#     #     try:
+#     element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click1)))
+#     ActionChains(driver).move_to_element(element).click().perform()
+#     print(f"Clicked1")
+#     time.sleep(0.5)
+#     element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click2)))
+#     ActionChains(driver).move_to_element(element).click().perform()
+#     print(f"Clicked2")
+#     time.sleep(0.5)
+#     if click3:
+#         Promo_suqares = driver.find_elements(By.CLASS_NAME, "promotion-square")
+#         for promo_square in Promo_suqares:
+#             if click3 in promo_square.get_attribute("class"):
+#                 element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click3)))
+#                 print(f"element: {element}")
+#         ActionChains(driver).move_to_element(element).click().perform()
+#         print(f"Clicked3")
+#         time.sleep(0.5)
+#             # print(f"Clicked: {click}")
+#             # break
+#         # except Exception as e:
+#         #     print(f"Retrying click: , Error: {e}")
+#         #     time.sleep(1)
+
+
+
+def perform_move(driver, move, side="w"):
+    """Perform a move on the chessboard via Selenium."""
+    
     col_map = {"a": "1", "b": "2", "c": "3", "d": "4", "e": "5", "f": "6", "g": "7", "h": "8"}
     click1 = f"square-{col_map[move[0]]}{move[1]}"
     click2 = f"square-{col_map[move[2]]}{move[3]}"
-    
-    # for click in [click1, click2]:
-    # while True:
-    #     try:
-    element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click1)))
-    ActionChains(driver).move_to_element(element).click().perform()
-    time.sleep(0.5)
-    element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click2)))
-    ActionChains(driver).move_to_element(element).click().perform()
-            # print(f"Clicked: {click}")
-            # break
-        # except Exception as e:
-        #     print(f"Retrying click: , Error: {e}")
-        #     time.sleep(1)
+    click3 = None
 
+    if len(move) == 5:  # Pawn promotion
+        click3 = f"promotion-piece.{side}{move[4]}"
+        print(f"Promotion: {click3}")
+
+    try:
+        # Click the starting square
+        element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click1)))
+        ActionChains(driver).move_to_element(element).click().perform()
+        print(f"Clicked1: {click1}")
+        time.sleep(0.5)
+
+        # Click the destination square
+        element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click2)))
+        ActionChains(driver).move_to_element(element).click().perform()
+        print(f"Clicked2: {click2}")
+        time.sleep(1)
+
+        # If it's a promotion, select the promoted piece
+        if click3:
+            element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, click3)))
+
+            print(f"element: {element}")
+            ActionChains(driver).move_to_element(element).click().perform()
+            print(f"Clicked3: {click3}")
+            time.sleep(0.5)
+
+    except Exception as e:
+        print(f"Error in move {move}: {e}")
 
 
 def is_castling_available(board, castling_rights):
@@ -213,8 +268,17 @@ def main(castling_rights, driver):
         castling_rights = is_castling_available(board,castling_rights)
         fen = board_to_fen(board, castling_rights)
         turn_who =  turn(driver)
+        print("Turn:", turn_who, "Side:", side)
+
+        game_over = driver.find_elements(By.CLASS_NAME, "game-result")
+        if len(game_over) > 0:
+            game_over = game_over[0]
+            print("Game Over:", game_over.text)
+            print("_____________________________________")
+            exit(0)
         
         if turn_who == side:
+            
             stockfish.set_fen_position(fen)
             best_move = stockfish.get_best_move()
             print("Best Move:", best_move)
