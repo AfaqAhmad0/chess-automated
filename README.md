@@ -96,4 +96,4 @@ This project is for educational purposes and does not promote unfair play. Use r
 - deal with Promotion
 - can use for dataset creation
 - miss click error bug
-
+- add Randomness
