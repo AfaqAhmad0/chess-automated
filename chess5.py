@@ -271,10 +271,11 @@ def main(castling_rights, driver):
         turn_who =  turn(driver)
         print("Turn:", turn_who, "Side:", side)
 
-        game_over = driver.find_elements(By.ID, "game-over-modal")[0]
-        game_over_children = game_over.find_elements(By.XPATH, ".//*")
-        if len(game_over_children) > 8:                
-            print("Game Over: ",len(game_over_children))
+        game_over = driver.find_elements(By.CLASS_NAME, "game-result")
+        if len(game_over) > 0:
+            game_over = game_over[0]
+            print("Game Over:", game_over.text)
+            print("_____________________________________")
             exit(0)
         
         if turn_who == side:
