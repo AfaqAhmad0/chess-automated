@@ -79,10 +79,10 @@ This project is for educational purposes and does not promote unfair play. Use r
 - [Stockfish](https://stockfishchess.org/)
 
 ## TO DO:
-- [ ] Check for game end
+- [x] Check for game end
 - [x] deal with Promotion
-+ Restructure the code
-+ miss click error bug
-- add Randomness
-- can use for dataset creation
+- [x] Restructure the code
+- [x] miss click error bug
+- [ ]add Randomness
+- [ ]can use for dataset creation
 
