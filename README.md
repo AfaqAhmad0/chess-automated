@@ -83,6 +83,6 @@ This project is for educational purposes and does not promote unfair play. Use r
 - [x] deal with Promotion
 - [x] Restructure the code
 - [x] miss click error bug
-- [ ]add Randomness
-- [ ]can use for dataset creation
+- [ ] add Randomness
+- [ ] can use for dataset creation
 
