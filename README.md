@@ -29,13 +29,8 @@ This project is a Chess bot that plays on an online chess platform using Seleniu
 2. **Download ChromeDriver:**
    - Ensure you have Chrome installed.
    - Download the matching [ChromeDriver](https://sites.google.com/chromium.org/driver/) version.
-   - Place the `chromedriver.exe` in the correct path and update the script accordingly.
 
-3. **Download Stockfish:**
-   - Download [Stockfish](https://stockfishchess.org/download/).
-   - Extract and update the script with the correct Stockfish executable path.
-
-4. **Enable Chrome Debugging:**
+3. **Enable Chrome Debugging:**
    Run Chrome with debugging enabled:
    ```sh
    "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9223 --user-data-dir="C:\Users\[YOURUSERNAME]\AppData\Local\Google\Chrome\User Data"
@@ -44,7 +39,7 @@ This project is a Chess bot that plays on an online chess platform using Seleniu
 ## Usage
 1. **Run the script:**
    ```sh
-   python chess.py
+   python main.py
    ```
 2. **Choose a side:**
    The script will prompt:
@@ -59,19 +54,12 @@ This project is a Chess bot that plays on an online chess platform using Seleniu
    - Performs the move using Selenium.
 
 ## Configuration
-- **Stockfish Strength:** Adjust in `setup_stockfish()`:
-  ```python
-  stockfish.set_skill_level(19)
-  stockfish.set_elo_rating(3000)
-  ```
-- **ChromeDriver Path:** Update in `setup_driver()`:
-  ```python
-  service = Service("H:/Rough/chess/chromedriver-win64/chromedriver.exe")
-  ```
-- **Stockfish Path:** Update in `setup_stockfish()`:
-  ```python
-  stockfish = Stockfish("H:/Rough/chess/stockfish/stockfish-windows-x86-64.exe")
-  ```
+- **Stockfish Strength:** Adjust in `config.json`:
+  - Skill Level
+  - ELO Rating
+  - Debugger adress
+- **ChromeDriver Path:** Update in config.json or select when window pops up in application
+
 
 ## Troubleshooting
 - **Bot Not Moving:**
@@ -93,8 +81,8 @@ This project is for educational purposes and does not promote unfair play. Use r
 ## TO DO:
 + Check for game end
 + deal with Promotion
-- Restructure the code
++ Restructure the code
++ miss click error bug
 - add Randomness
 - can use for dataset creation
-- miss click error bug
 
