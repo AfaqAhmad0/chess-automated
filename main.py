@@ -1,12 +1,11 @@
 import time
-from selenium.webdriver.common.by import By
-
 from castling import is_castling_available
 from conversions import board_to_fen, get_board_state
 from driver import setup_driver,config
 from clicks import perform_move
 from model import setup_stockfish
 from turn import turn
+from gameover import game_over
 
 side = input("b or w: ").strip().lower()
 if side not in ["b", "w"]:
@@ -25,11 +24,7 @@ def main(castling_rights, driver):
         turn_who =  turn(driver)
         print("Turn:", turn_who, "Side:", side)
 
-        game_over = driver.find_elements(By.CLASS_NAME, "game-result")
-        if len(game_over) > 0:
-            game_over = game_over[0]
-            print("Game Over:", game_over.text)
-            print("_____________________________________")
+        if game_over():
             exit(0)
         
         if turn_who == side:            
